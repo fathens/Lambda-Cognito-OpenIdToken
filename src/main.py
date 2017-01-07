@@ -17,7 +17,13 @@ def lambda_handler(event, context):
 
 def add(params):
     logger.info("Adding: " + str(params))
-    return "Added"
+    client = boto3.client('cognito-identity')
+    res = client.get_open_id_token_for_developer_identity(
+        IdentityPoolId=params["IdentityPoolId"],
+        IdentityId=params["IdentityId"],
+        Logins=params["Logins"]
+    )
+    return res
     
 def remove(params):
     logger.info("Removing: " + str(params))
