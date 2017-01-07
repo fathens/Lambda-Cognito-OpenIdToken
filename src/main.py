@@ -11,12 +11,15 @@ logger.setLevel(logging.INFO)
 client = boto3.client('cognito-identity')
 
 def lambda_handler(event, context):
+    logger.info("Running vertion: " + context.function_version)
+
     if "add" in event:
         return add(event["add"])
     if "remove" in event:
         return remove(event["remove"])
     if "merge" in event:
         return merge(event["merge"])
+
     raise Exception("No request")
 
 def add(params):
