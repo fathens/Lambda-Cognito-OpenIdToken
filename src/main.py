@@ -16,9 +16,9 @@ def lambda_handler(event, context):
     raise Exception("No request")
 
 def add(params):
-    logger.info("Adding: " + params)
+    logger.info("Adding: " + str(params))
     return "Added"
     
 def remove(params):
-    logger.info("Removing: " + params)
+    logger.info("Removing: " + str(params))
     return "Removed"
