@@ -1,0 +1,18 @@
+language: python
+branches:
+  only:
+    - master
+    - develop
+    - /^feature\/\w+/
+
+env:
+  global:
+    - FUNC_NAME='Cognito-OpenIdToken'
+    - AWS_LAMBDA_ALIAS_NAME=$(if [ "$TRAVIS_BRANCH" == 'master' ]; then echo Production; else echo Beta; fi)
+
+install:
+  - sudo easy_install pip && sudo pip install awscli
+
+script:
+  - (cd src; zip -Dry ../main.zip ./)
+  - export VERSION=$(./lambda_update.sh Peeler:$AWS_LAMBDA_ALIAS_NAME build-config/$TRAVIS_REPO_SLUG/main.zip)
