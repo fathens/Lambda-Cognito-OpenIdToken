@@ -1,0 +1,21 @@
+language: python
+branches:
+  only:
+    - master
+    - develop
+    - /^feature\/\w+/
+
+env:
+  global:
+    - AWS_LAMBDA_NAME='Cognito-OpenIdToken'
+    - AWS_LAMBDA_VERSION_ALIAS=$(if [ "$TRAVIS_BRANCH" == 'master' ]; then echo Production; else echo Beta; fi)
+
+install:
+  - sudo easy_install pip && sudo pip install awscli
+
+script:
+  - (cd src; zip -Dry ../main.zip ./)
+  - export VERSION=$(./lambda_update.sh $AWS_LAMBDA_NAME:$AWS_LAMBDA_VERSION_ALIAS $AWS_S3_BUCKET/$TRAVIS_REPO_SLUG/main.zip)
+
+after_success:
+  - curl -X POST -H "Authorization:token $GITHUB_OAUTH_TOKEN" https://api.github.com/repos/$TRAVIS_REPO_SLUG/git/refs -d "{\"ref\":\"refs/tags/deploy/$VERSION\", \"sha\":\"$(git log HEAD -n1 --format=%H)\"}"
